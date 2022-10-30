@@ -1,31 +1,35 @@
 ﻿using RabbitMQ.Client;
 
-const string ExchangeName = "Data.Capture.Exchange";
-const string RoutingKey = "Data.Capture.To.Main.Processing";
-const string DirectoryPath = @"C:\BeingWatched";
+const string CONNECTION_STRING = "amqp://guest:guest@localhost:5672";
+const string EXCHANGE_NAME = "Data.Capture.Exchange";
+const string ROUTING_KEY = "Data.Capture.To.Main.Processing";
+const string DIRECTORY_PATH = @"C:\BeingWatched";
+const int CHUNK_SIZE = 102400;
 
-var factory = new ConnectionFactory
+ConnectionFactory factory = new()
 {
-    Uri = new Uri("amqp://guest:guest@localhost:5672")
+    Uri = new Uri(CONNECTION_STRING)
 };
-var connection = factory.CreateConnection();
-var channel = connection.CreateModel();
-channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct, true);
+IConnection connection = factory.CreateConnection();
+IModel channel = connection.CreateModel();
+channel.ExchangeDeclare(EXCHANGE_NAME, ExchangeType.Direct, true);
 
-FileSystemWatcher folderWatcher = StartListeningToFolderChange();
+FileSystemWatcher folderWatcher = GetFolderChangedWatcher();
 
-while (true)
+Console.WriteLine("Press Esc to exit...");
+ConsoleKeyInfo input;
+do
 {
-
-}
+    input = Console.ReadKey();
+} while (input.Key != ConsoleKey.Escape);
 
 folderWatcher.Dispose();
 
-FileSystemWatcher StartListeningToFolderChange()
+FileSystemWatcher GetFolderChangedWatcher()
 {
     FileSystemWatcher watcher = new()
     {
-        Path = Directory.CreateDirectory(DirectoryPath).FullName,
+        Path = Directory.CreateDirectory(DIRECTORY_PATH).FullName,
         EnableRaisingEvents = true,
         NotifyFilter = NotifyFilters.FileName,
         Filter = "*.pdf"
@@ -34,13 +38,19 @@ FileSystemWatcher StartListeningToFolderChange()
     watcher.Created += (object sender, FileSystemEventArgs e) =>
     {
         WaitFileToBeReady(e.FullPath);
-        var properties = channel.CreateBasicProperties();
+        IBasicProperties properties = channel.CreateBasicProperties();
         properties.Headers = new Dictionary<string, object> ()
         { 
-            { "fileName", e.Name }, 
+            { "fileName", e.Name },
+            { "finished", true }
         };
-        var fileBytes = File.ReadAllBytes(e.FullPath);
-        channel.BasicPublish(ExchangeName, RoutingKey, properties, fileBytes);
+        IEnumerable<(byte[], bool)> fileChunks = GetFileChunks(e.Name, e.FullPath);
+        foreach (var (fileChunk, finished) in fileChunks)
+        {
+            properties.Headers["finished"] = finished;
+
+            channel.BasicPublish(EXCHANGE_NAME, ROUTING_KEY, properties, fileChunk);
+        }
     };
 
     watcher.Disposed += (object? sender, EventArgs e) =>
@@ -67,5 +77,33 @@ void WaitFileToBeReady(string filePath)
         catch (IOException)
         {
         }
+    }
+}
+
+// Returns file chunk and a flag whether the chunk the last one
+IEnumerable<(byte[], bool)> GetFileChunks(string fileName, string filePath)
+{
+    FileStream fileStream = File.OpenRead(filePath);
+    StreamReader streamReader = new(fileStream);
+    int remainingFileSize = Convert.ToInt32(fileStream.Length);
+    int totalFileSize = Convert.ToInt32(fileStream.Length);
+    byte[] buffer;
+    while (remainingFileSize > 0)
+    {
+        int read = 0;
+        if (remainingFileSize > CHUNK_SIZE)
+        {
+            buffer = new byte[CHUNK_SIZE];
+            read = fileStream.Read(buffer, 0, CHUNK_SIZE);
+            yield return (buffer, false);
+        }
+        else
+        {
+            buffer = new byte[remainingFileSize];
+            read = fileStream.Read(buffer, 0, remainingFileSize);
+            yield return (buffer, true);
+        }
+
+        remainingFileSize -= read;
     }
 }
