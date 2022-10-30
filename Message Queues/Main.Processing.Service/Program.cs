@@ -2,34 +2,60 @@
 using RabbitMQ.Client;
 using System.Text;
 
-const string QueueName = "Main.Processing";
-const string ExchangeName = "Data.Capture.Exchange";
-const string RoutingKey = "Data.Capture.To.Main.Processing";
+const string CONNECTION_STRING = "amqp://guest:guest@localhost:5672";
+const string EXCHANGE_NAME = "Data.Capture.Exchange";
+const string ROUTING_KEY = "Data.Capture.To.Main.Processing";
+const string DIRECTORY_PATH = @"C:\BeingWritten";
+const string QUEUE_NAME = "Main.Processing";
 
-var path = Directory.CreateDirectory(@"C:\BeingWritten").FullName;
+var path = Directory.CreateDirectory(DIRECTORY_PATH).FullName;
 
-var factory = new ConnectionFactory
-{
-    Uri = new Uri("amqp://guest:guest@localhost:5672")
-};
-var connection = factory.CreateConnection();
-var channel = connection.CreateModel();
-
-channel.QueueDeclare(QueueName, true, false, false);
-channel.QueueBind(QueueName, ExchangeName, RoutingKey);
+IConnection connection = SetUpRabbitMQConnection();
+IModel channel = SetUpRabbitMQChannel(connection);
 
 var consumer = new EventingBasicConsumer(channel);
-consumer.Received += (sender, eventArgs) =>
+consumer.Received += OnMessageReceived;
+
+channel.BasicConsume(QUEUE_NAME, false, consumer);
+
+do
 {
-    var fileName = Encoding.UTF8.GetString(eventArgs.BasicProperties.Headers["fileName"] as byte[]);
-    File.WriteAllBytes($"{path}\\{fileName}", eventArgs.Body.ToArray());
+    Console.WriteLine("Press Esc to exit...");
 
-    Console.WriteLine($"Writing to {fileName}");
-};
-
-channel.BasicConsume(QueueName, false, consumer);
-
-Console.ReadLine();
+} while(Console.ReadKey().Key != ConsoleKey.Escape);
 
 channel.Close();
 connection.Close();
+
+IConnection SetUpRabbitMQConnection()
+{
+    var factory = new ConnectionFactory
+    {
+        Uri = new Uri(CONNECTION_STRING)
+    };
+    return factory.CreateConnection();
+}
+
+IModel SetUpRabbitMQChannel(IConnection connection)
+{
+    var channel = connection.CreateModel();
+    channel.ExchangeDeclare(EXCHANGE_NAME, ExchangeType.Direct, true);
+    channel.QueueDeclare(QUEUE_NAME, true, false, false);
+    channel.QueueBind(QUEUE_NAME, EXCHANGE_NAME, ROUTING_KEY);
+    return channel;
+}
+
+void OnMessageReceived(object? sender, BasicDeliverEventArgs eventArgs)
+{
+    Console.WriteLine("Received a chunk!");
+    string fileName = Encoding.UTF8.GetString(eventArgs.BasicProperties.Headers["fileName"] as byte[]);
+    bool isLastChunk = Convert.ToBoolean(eventArgs.BasicProperties.Headers["finished"]);
+
+    using (FileStream fileStream = new($"{path}\\{fileName}", FileMode.Append, FileAccess.Write))
+    {
+        fileStream.Write(eventArgs.Body.ToArray(), 0, eventArgs.Body.Length);
+        fileStream.Flush();
+    }
+    Console.WriteLine("Chunk saved. Finished? {0}", isLastChunk);
+    channel.BasicAck(eventArgs.DeliveryTag, false);
+}
