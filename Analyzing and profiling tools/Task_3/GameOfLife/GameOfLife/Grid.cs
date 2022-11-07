@@ -79,7 +79,7 @@ namespace GameOfLife
             for (int i = 0; i < SizeX; i++)
                 for (int j = 0; j < SizeY; j++)
                     cellsVisuals[i, j].Fill = cells[i, j].IsAlive
-                                                  ? (cells[i, j].Age < 2 ? Brushes.White : Brushes.DarkGray)
+                                                  ? (cells[i, j].Age < 2 ? Brushes.White : Brushes.Red)
                                                   : Brushes.Gray;
         }
 
