@@ -123,6 +123,8 @@ namespace GameOfLife
                 {
                     cells[i, j].IsAlive = nextGenerationCells[i, j].IsAlive;
                     cells[i, j].Age = nextGenerationCells[i, j].Age;
+                    cellsVisuals[i, j].MouseMove += MouseMove;
+                    cellsVisuals[i, j].MouseLeftButtonDown += MouseMove;
                 }
 
             UpdateGraphics();
