@@ -15,24 +15,9 @@ namespace ProfileSample.Controllers
         {
             var context = new ProfileSampleEntities();
 
-            var sources = context.ImgSources.Take(20).Select(x => x.Id);
-            
-            var model = new List<ImageModel>();
+            List<ImageModel> models = context.ImgSources.Take(20).Select(x => new ImageModel { Name = x.Name, Data = x.Data}).ToList();
 
-            foreach (var id in sources)
-            {
-                var item = context.ImgSources.Find(id);
-
-                var obj = new ImageModel()
-                {
-                    Name = item.Name,
-                    Data = item.Data
-                };
-
-                model.Add(obj);
-            } 
-
-            return View(model);
+            return View(models);
         }
 
         public ActionResult Convert()
