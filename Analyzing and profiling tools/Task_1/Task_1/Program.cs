@@ -2,8 +2,6 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-object obj = new();
-
 GeneratePasswordUsingKeyDerivation("nikoloz", new byte[16]);
 
 Stopwatch stopwatch = new();
