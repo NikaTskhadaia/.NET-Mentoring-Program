@@ -2,18 +2,16 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-GeneratePasswordUsingKeyDerivation("nikoloz", new byte[16]);
-
 Stopwatch stopwatch = new();
-stopwatch.Start();
-var hashedKeyDerivation = GeneratePasswordUsingKeyDerivation("nikoloz", new byte[16]);
-stopwatch.Stop();
-Console.WriteLine($"- {stopwatch.ElapsedTicks} {hashedKeyDerivation} - using Microsoft.AspNetCore.Cryptography.KeyDerivation");
-stopwatch.Reset();
 stopwatch.Start();
 var hashedPassword = GeneratePasswordHashUsingSalt("nikoloz", new byte[16]);
 stopwatch.Stop();
-Console.WriteLine($"- {stopwatch.ElapsedTicks} {hashedPassword} - using System.Security.Cryptography.Rfc2898DeriveBytes");
+Console.WriteLine($"- {stopwatch.ElapsedMilliseconds} {hashedPassword} - using System.Security.Cryptography.Rfc2898DeriveBytes");
+stopwatch.Reset();
+stopwatch.Start();
+var hashedKeyDerivation = GeneratePasswordUsingKeyDerivation("nikoloz", new byte[16]);
+stopwatch.Stop();
+Console.WriteLine($"- {stopwatch.ElapsedMilliseconds} {hashedKeyDerivation} - using Microsoft.AspNetCore.Cryptography.KeyDerivation");
 
 Console.ReadLine();
 
