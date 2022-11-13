@@ -33,7 +33,7 @@ namespace Expressions.Task3.E3SQueryProvider.Test
                 // Operator between queries is AND, in other words result set will fit to both statements above
               ],
              */
-            var expected = "{\"statements\":[{\"query\":\"Workstation:(EPRUIZHW006)\"},{\"query\":\"Manager:(John*)\"}]}";
+            string expected = "{\"statements\":[{\"query\":\"Workstation:(EPRUIZHW006)\"},{\"query\":\"Manager:(John*)\"}]}";
             string translated = translator.Translate(expression);
 
             // todo: create asserts for this test by yourself, because they will depend on your final implementation
