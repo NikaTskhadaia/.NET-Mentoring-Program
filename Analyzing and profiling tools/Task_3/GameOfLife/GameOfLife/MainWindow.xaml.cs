@@ -11,7 +11,6 @@ namespace GameOfLife
         private int genCounter;
         private AdWindow[] adWindow;
 
-
         public MainWindow()
         {
             InitializeComponent();
@@ -22,10 +21,8 @@ namespace GameOfLife
             timer.Interval = TimeSpan.FromMilliseconds(200);
         }
 
-
         private void StartAd()
-        {
-            
+        {            
             {
                 adWindow = new AdWindow[2];
                 for (int i = 0; i < 2; i++)
@@ -39,8 +36,6 @@ namespace GameOfLife
                         adWindow[i].Show();
                     }
                 }
-                
-                
             }
         }
 
@@ -52,7 +47,6 @@ namespace GameOfLife
                 adWindow[i] = null;
             }
         }
-
 
         private void Button_OnClick(object sender, EventArgs e)
         {
