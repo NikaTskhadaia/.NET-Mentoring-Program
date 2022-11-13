@@ -1,6 +1,11 @@
-﻿using System;
+﻿using Expressions.Task3.E3SQueryProvider.Models.Request;
+using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection.Metadata;
 using System.Text;
 
 namespace Expressions.Task3.E3SQueryProvider
@@ -33,6 +38,41 @@ namespace Expressions.Task3.E3SQueryProvider
 
                 return node;
             }
+
+            if (node.Method.DeclaringType == typeof(string))
+            {
+                Visit(node.Object as MemberExpression);
+
+                if (node.Method.Name == "Equals")
+                {
+                    Visit(node.Arguments[0]);
+                    return node;
+                }
+
+                var constantExpression = node.Arguments[0] as ConstantExpression;
+                StringBuilder sb = new StringBuilder(constantExpression.Value.ToString());
+
+                if (node.Method.Name == "StartsWith")
+                {
+                    sb.Append('*');
+                }
+
+                if (node.Method.Name == "EndsWith")
+                {
+                    sb.Insert(0, '*');
+                }
+
+                if (node.Method.Name == "Contains")
+                {
+                    sb.Insert(0, '*');
+                    sb.Append('*');
+                }
+
+                constantExpression = Expression.Constant(sb.ToString(), typeof(string));
+                Visit(constantExpression);
+                return node;
+            }
+
             return base.VisitMethodCall(node);
         }
 
@@ -41,16 +81,18 @@ namespace Expressions.Task3.E3SQueryProvider
             switch (node.NodeType)
             {
                 case ExpressionType.Equal:
-                    if (node.Left.NodeType != ExpressionType.MemberAccess)
-                        throw new NotSupportedException($"Left operand should be property or field: {node.NodeType}");
-
-                    if (node.Right.NodeType != ExpressionType.Constant)
-                        throw new NotSupportedException($"Right operand should be constant: {node.NodeType}");
-
-                    Visit(node.Left);
-                    _resultStringBuilder.Append("(");
                     Visit(node.Right);
-                    _resultStringBuilder.Append(")");
+                    Visit(node.Left);
+                    break;
+                case ExpressionType.AndAlso: 
+                    var statements = new List<Statement>();
+                    Visit(node.Left);
+                    statements.Add(new Statement { Query = _resultStringBuilder.ToString() });
+                    _resultStringBuilder.Clear();
+                    Visit(node.Right);
+                    statements.Add(new Statement { Query = _resultStringBuilder.ToString() });
+                    _resultStringBuilder.Clear();
+                    _resultStringBuilder.Append(JsonConvert.SerializeObject(new { statements = statements }));
                     break;
 
                 default:
@@ -62,14 +104,16 @@ namespace Expressions.Task3.E3SQueryProvider
 
         protected override Expression VisitMember(MemberExpression node)
         {
-            _resultStringBuilder.Append(node.Member.Name).Append(":");
+            _resultStringBuilder.Insert(0, node.Member.Name).Insert(node.Member.Name.Length, ":");
 
             return base.VisitMember(node);
         }
 
         protected override Expression VisitConstant(ConstantExpression node)
         {
+            _resultStringBuilder.Append("(");
             _resultStringBuilder.Append(node.Value);
+            _resultStringBuilder.Append(")");
 
             return node;
         }
