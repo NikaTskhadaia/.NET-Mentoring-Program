@@ -51,8 +51,6 @@ namespace GameOfLife
                 adWindow[i].Closed -= AdWindowOnClosed;
                 adWindow[i] = null;
             }
-            
-            
         }
 
 
@@ -81,8 +79,6 @@ namespace GameOfLife
         private void ButtonClear_Click(object sender, RoutedEventArgs e)
         {
             mainGrid.Clear();
-        }
-
-        
+        }        
     }
 }
