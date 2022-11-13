@@ -10,8 +10,8 @@ namespace Expressions.Task3.E3SQueryProvider.QueryProvider
 {
     public class E3SEntitySet<T> : IQueryable<T> where T : BaseE3SEntity
     {
-        protected readonly Expression Expr;
-        protected readonly IQueryProvider QueryProvider;
+        protected readonly Expression _expr;
+        protected readonly IQueryProvider _queryProvider;
 
         public E3SEntitySet(E3SSearchService client)
         {
@@ -20,17 +20,17 @@ namespace Expressions.Task3.E3SQueryProvider.QueryProvider
                 throw new ArgumentNullException(nameof(client));
             }
 
-            Expr = Expression.Constant(this);
-            QueryProvider = new E3SLinqProvider(client);
+            _expr = Expression.Constant(this);
+            _queryProvider = new E3SLinqProvider(client);
         }
 
         #region public properties
 
         public Type ElementType => typeof(T);
 
-        public Expression Expression => Expr;
+        public Expression Expression => _expr;
 
-        public IQueryProvider Provider => QueryProvider;
+        public IQueryProvider Provider => _queryProvider;
 
         #endregion
 
@@ -38,12 +38,12 @@ namespace Expressions.Task3.E3SQueryProvider.QueryProvider
 
         public IEnumerator<T> GetEnumerator()
         {
-            return QueryProvider.Execute<IEnumerable<T>>(Expr).GetEnumerator();
+            return _queryProvider.Execute<IEnumerable<T>>(_expr).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return QueryProvider.Execute<IEnumerable>(Expr).GetEnumerator();
+            return _queryProvider.Execute<IEnumerable>(_expr).GetEnumerator();
         }
 
         #endregion
