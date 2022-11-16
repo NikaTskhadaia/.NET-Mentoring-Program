@@ -1,12 +1,18 @@
-﻿namespace Catalog.Service.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+
+namespace Catalog.Service.Models;
 
 public class Item
 {
+    [JsonIgnore]
     public int Id { get; set; }
 
-    public string Description { get; set; }
+    [Required]
+    public string Description { get; set; } = string.Empty;
 
-    public int CategoryId { get; set; }
+    public int? CategoryId { get; set; }
 
-    public Category Category { get; set; }
+    [JsonIgnore]
+    public Category? Category { get; set; } = default!;
 }
