@@ -1,5 +1,4 @@
-﻿using Catalog.Service.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace Catalog.Service.Routes;
@@ -10,10 +9,7 @@ internal static class Routes
     {
         group.WithTags("Items");
 
-        group.MapGet("/", async (ItemDbContext db) =>
-        {
-            return await db.Items.ToListAsync();
-        })
+        group.MapGet("/", ItemsWithPagination)
         .Produces<List<Item>>();
 
         group.MapGet("/{id}", async (ItemDbContext db, int id) =>
@@ -164,5 +160,14 @@ internal static class Routes
         .Produces(Status204NoContent);
 
         return group;
+    }
+
+    private static async Task<List<Item>> ItemsWithPagination(ItemDbContext db, int? categoryId, int pageNumber = 1, int pageSize = 20)
+    {
+        return await db.Items
+            .Where(i => !categoryId.HasValue || i.CategoryId == categoryId.Value)
+            .Skip(pageSize * (pageNumber - 1))
+            .Take(pageSize)
+            .ToListAsync();        
     }
 }

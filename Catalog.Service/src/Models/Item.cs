@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-
-namespace Catalog.Service.Models;
+﻿namespace Catalog.Service.Models;
 
 public class Item
 {
