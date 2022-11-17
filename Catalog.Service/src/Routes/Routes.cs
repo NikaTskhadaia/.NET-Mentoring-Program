@@ -128,12 +128,16 @@ internal static class Routes
         .Produces(Status201Created)
         .ProducesValidationProblem();
 
-        group.MapPut("/{id}", async (ItemDbContext db, int id, Category category) =>
+        group.MapPut("/{id}", async (ItemDbContext db, int id, Category newCategory) =>
         {
-            if (!await db.Categories.AnyAsync(x => x.Id == id))
+            var category = await db.Categories.FindAsync(id);
+            if (category is null)
             {
                 return Results.NotFound();
             }
+
+            category.Name = newCategory.Name;
+            category.Items = category.Items;
 
             db.Update(category);
             await db.SaveChangesAsync();
@@ -165,7 +169,7 @@ internal static class Routes
     private static async Task<List<Item>> ItemsWithPagination(ItemDbContext db, int? categoryId, int pageNumber = 1, int pageSize = 20)
     {
         return await db.Items
-            .Where(i => !categoryId.HasValue || i.CategoryId == categoryId.Value)
+            .Where(i => !categoryId.HasValue || i.CategoryId == categoryId)
             .Skip(pageSize * (pageNumber - 1))
             .Take(pageSize)
             .ToListAsync();        
