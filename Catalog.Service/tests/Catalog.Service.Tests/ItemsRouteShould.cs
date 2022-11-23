@@ -81,7 +81,7 @@ public class ItemsRouteShould
         var response = await client.PutAsJsonAsync($"items/{item.Id}", item);
 
         // Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         var updatedItem = await client.GetFromJsonAsync<Item>($"/items/{item.Id}");
         Assert.NotNull(updatedItem);
         Assert.Equal("Updated", updatedItem?.Description);
@@ -111,7 +111,7 @@ public class ItemsRouteShould
         item = db.Items.FirstOrDefault(i => i.Id == item.Id);
 
         // Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.Null(item);
     }
 }

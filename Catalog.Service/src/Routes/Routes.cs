@@ -33,51 +33,28 @@ internal static class Routes
                 });
             }
 
-            var item = new Item
-            {
-                Description = newItem.Description,
-                CategoryId = newItem.CategoryId
-            };
-
-            await db.Items.AddAsync(item);
+            await db.Items.AddAsync(newItem);
             await db.SaveChangesAsync();
 
-            return Results.Created($"/items/{item.Id}", item);
+            return Results.Created($"/items/{newItem.Id}", newItem);
         })
         .Produces(Status201Created)
         .ProducesValidationProblem();
 
-        group.MapPut("/{id}", async (ItemDbContext db, int id, Item newItem) =>
-        {
-            var item = await db.Items.FirstOrDefaultAsync(x => x.Id == id);
-            if (item is null)
-            {
-                return Results.NotFound();
-            }
-            item.Description = newItem.Description;
-            item.CategoryId = newItem.CategoryId;
-
-            db.Update(item);
-            await db.SaveChangesAsync();
-
-            return Results.Ok();
-        })
+        group.MapPut("/{id}", async (ItemDbContext db, int id, Item newItem) =>        
+            await db.Items.Where(x => x.Id == id).ExecuteUpdateAsync(
+                updates => updates
+                    .SetProperty(i => i.Description, newItem.Description)
+                    .SetProperty(i => i.CategoryId, newItem.CategoryId)) == 0
+                ? Results.NotFound()
+                : Results.NoContent())
         .Produces(Status404NotFound)
         .Produces(Status204NoContent);
 
         group.MapDelete("/{id}", async (ItemDbContext db, int id) =>
-        {
-            var item = await db.Items.FindAsync(id);
-            if (item is null)
-            {
-                return Results.NotFound();
-            }
-
-            db.Items.Remove(item);
-            await db.SaveChangesAsync();
-
-            return Results.Ok();
-        })
+            await db.Items.Where(item => item.Id == id).ExecuteDeleteAsync() == 0
+            ? Results.NotFound()
+            : Results.NoContent())
         .Produces(Status404NotFound)
         .Produces(Status204NoContent);
 
@@ -129,37 +106,18 @@ internal static class Routes
         .ProducesValidationProblem();
 
         group.MapPut("/{id}", async (ItemDbContext db, int id, Category newCategory) =>
-        {
-            var category = await db.Categories.FindAsync(id);
-            if (category is null)
-            {
-                return Results.NotFound();
-            }
-
-            category.Name = newCategory.Name;
-            category.Items = category.Items;
-
-            db.Update(category);
-            await db.SaveChangesAsync();
-
-            return Results.Ok();
-        })
+            await db.Categories.Where(c => c.Id == id).ExecuteUpdateAsync(
+                updates => updates
+                    .SetProperty(c => c.Name, newCategory.Name)) == 0
+                ? Results.NotFound()
+                : Results.NoContent())
         .Produces(Status404NotFound)
         .Produces(Status204NoContent);
 
         group.MapDelete("/{id}", async (ItemDbContext db, int id) =>
-        {
-            var category = await db.Categories.FindAsync(id);
-            if (category is null)
-            {
-                return Results.NotFound();
-            }
-
-            db.Categories.Remove(category);
-            await db.SaveChangesAsync();
-
-            return Results.Ok();
-        })
+            await db.Categories.Where(c => c.Id == id).ExecuteDeleteAsync() == 0
+            ? Results.NotFound()
+            : Results.NoContent())
         .Produces(Status404NotFound)
         .Produces(Status204NoContent);
 

@@ -74,7 +74,7 @@ public class CategoriesRoutesShould
         await using var application = new ItemCatalogApplication();
         using var db = application.CreateItemDbContext();
         var client = application.CreateClient();
-        var newCategory = new Category { Name = "Drinks" };
+        var newCategory = new Category { Name = "Drinks", Items = Array.Empty<Item>() };
 
         // Act
         db.Categories.Add(newCategory);
@@ -83,7 +83,7 @@ public class CategoriesRoutesShould
         var response = await client.PutAsJsonAsync($"categories/{newCategory.Id}", newCategory);
 
         // Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         var updatedCategory = await client.GetFromJsonAsync<Category>($"/categories/{newCategory.Id}");
         Assert.NotNull(updatedCategory);
         Assert.Equal("Updated", updatedCategory?.Name);
@@ -113,7 +113,7 @@ public class CategoriesRoutesShould
         var deletedCategory = db.Items.FirstOrDefault(i => i.Id == dbCategory.Id);
 
         // Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         Assert.Null(deletedCategory);
     }
 }
