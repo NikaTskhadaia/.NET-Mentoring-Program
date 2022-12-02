@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdapterTask", "AdapterTask\AdapterTask.csproj", "{7A69E083-BAD2-4601-B007-8CDA78ED6189}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Composite.Tasks", "Composite.Tasks\Composite.Tasks.csproj", "{0AF75489-5255-46FF-AF33-0F3034B46C2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacadeTask", "FacadeTask\FacadeTask.csproj", "{118CB113-F90B-4A2E-8FBF-36EBBBFF8F28}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7A69E083-BAD2-4601-B007-8CDA78ED6189}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A69E083-BAD2-4601-B007-8CDA78ED6189}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A69E083-BAD2-4601-B007-8CDA78ED6189}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A69E083-BAD2-4601-B007-8CDA78ED6189}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AF75489-5255-46FF-AF33-0F3034B46C2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AF75489-5255-46FF-AF33-0F3034B46C2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AF75489-5255-46FF-AF33-0F3034B46C2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AF75489-5255-46FF-AF33-0F3034B46C2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{118CB113-F90B-4A2E-8FBF-36EBBBFF8F28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{118CB113-F90B-4A2E-8FBF-36EBBBFF8F28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{118CB113-F90B-4A2E-8FBF-36EBBBFF8F28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{118CB113-F90B-4A2E-8FBF-36EBBBFF8F28}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
