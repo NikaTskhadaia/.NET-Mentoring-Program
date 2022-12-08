@@ -7,8 +7,6 @@ var form = new Form("myForm");
 form.AddComponent(inputText);
 form.AddComponent(labelText);
 
-var inputTextString = inputText.ConvertToString();
-var labelTextString = labelText.ConvertToString();
 
 var formString = form.ConvertToString();
 
