@@ -3,11 +3,11 @@ using Trip.Insurance.Calculation.Calculators;
 
 namespace Trip.Insurance.Calculation.CalculatorDecorators;
 
-public class InsurancePaymentCalculatorWithLogging : CalculatorDecorator
+public class CalculatorWithLogging : CalculatorDecorator
 {
-    private readonly ILogger<InsurancePaymentCalculatorWithLogging> _logger;
+    private readonly ILogger<CalculatorWithLogging> _logger;
 
-    public InsurancePaymentCalculatorWithLogging(ICalculator insurancePaymentCalculator, ILogger<InsurancePaymentCalculatorWithLogging> logger)
+    public CalculatorWithLogging(ICalculator insurancePaymentCalculator, ILogger<CalculatorWithLogging> logger)
         : base(insurancePaymentCalculator)
     {
         _logger = logger;

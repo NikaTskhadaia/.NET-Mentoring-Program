@@ -1,4 +1,6 @@
+using Trip.Insurance.Calculation.CalculatorDecorators;
 using Trip.Insurance.Calculation.CalculatorFactory;
+using Trip.Insurance.Calculation.Calculators;
 
 namespace Calculator.Tests;
 
@@ -22,7 +24,7 @@ public class InsuranceCalculatorShould
     [Fact]
     public void CalculatePaymentWithCaching()
     {
-        var paymentCalculator = _calculatorFactory.CreateCachedInsurancePaymentCalculator();
+        var paymentCalculator = _calculatorFactory.CreateCachedCalculator();
         var payment = paymentCalculator.CalculatePayment("Nika");
         Assert.Equal(decimal.Zero, payment);
     }
@@ -30,7 +32,7 @@ public class InsuranceCalculatorShould
     [Fact]
     public void CalculatePaymentWithLogging()
     {
-        var paymentCalculator = _calculatorFactory.CreateLoggingInsurancePaymentCalculator();
+        var paymentCalculator = _calculatorFactory.CreateLoggingCalculator();
         var payment = paymentCalculator.CalculatePayment("Nika");
         Assert.Equal(decimal.Zero, payment);
     }
@@ -38,7 +40,7 @@ public class InsuranceCalculatorShould
     [Fact]
     public void CalculatePaymentWithRounding()
     {
-        var paymentCalculator = _calculatorFactory.CreateRoundingInsurancePaymentCalculator();
+        var paymentCalculator = _calculatorFactory.CreateRoundingCalculator();
         var payment = paymentCalculator.CalculatePayment("Nika");
         Assert.Equal(decimal.Zero, payment);
     }
@@ -46,10 +48,9 @@ public class InsuranceCalculatorShould
     [Fact]
     public void CalculatePaymentWithMultipleDecorators()
     {
-        var paymentCalculator = _calculatorFactory.CreateInsurancePaymentCalculatorWithDecorator(
-            _calculatorFactory.CreateCachedInsurancePaymentCalculator()
-            );
-        var payment = paymentCalculator.CalculatePayment("Nika");
-        Assert.Equal(decimal.Zero, payment);
+        var cachedCalculator = _calculatorFactory.CreateCachedCalculator();
+        _calculatorFactory.SetCalculatorDecorator(cachedCalculator, _calculatorFactory.CreateLoggingCalculator());
+
+        cachedCalculator.CalculatePayment("Nika");
     }
 }

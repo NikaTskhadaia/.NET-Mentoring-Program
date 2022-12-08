@@ -4,9 +4,14 @@ namespace Trip.Insurance.Calculation.CalculatorDecorators;
 
 public abstract class CalculatorDecorator : ICalculator
 {
-    protected readonly ICalculator _calculator;
+    private ICalculator _calculator;
 
     protected CalculatorDecorator(ICalculator calculator)
+    {
+        _calculator = calculator;
+    }
+    
+    public void SetCalculator(ICalculator calculator)
     {
         _calculator = calculator;
     }

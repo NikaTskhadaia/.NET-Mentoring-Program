@@ -3,9 +3,9 @@ using Trip.Insurance.Calculation.Calculators;
 
 namespace Trip.Insurance.Calculation.CalculatorDecorators;
 
-public class InsurancePaymentCalculatorWithRounding : CalculatorDecorator
+public class CalculatorWithRounding : CalculatorDecorator
 {
-    public InsurancePaymentCalculatorWithRounding(ICalculator insurancePaymentCalculator) : base(insurancePaymentCalculator)
+    public CalculatorWithRounding(ICalculator insurancePaymentCalculator) : base(insurancePaymentCalculator)
     {
     }
 

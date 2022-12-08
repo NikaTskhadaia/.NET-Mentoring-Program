@@ -3,11 +3,11 @@ using Trip.Insurance.Calculation.Calculators;
 
 namespace Trip.Insurance.Calculation.CalculatorDecorators;
 
-public class InsurancePaymentCalculatorWithCaching : CalculatorDecorator
+public class CalculatorWithCaching : CalculatorDecorator
 {
     private readonly IMemoryCache _cache;
 
-    public InsurancePaymentCalculatorWithCaching(ICalculator paymentCalculator, IMemoryCache cache) : base(paymentCalculator)
+    public CalculatorWithCaching(ICalculator paymentCalculator, IMemoryCache cache) : base(paymentCalculator)
     {
         _cache = cache;
     }

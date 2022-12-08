@@ -14,27 +14,29 @@ public class CalculatorFactory : ICalculatorFactory
         return new InsurancePaymentCalculator(new CurrencyService(), new TripRepository());
     }
 
-    public ICalculator CreateCachedInsurancePaymentCalculator()
+    public ICalculator CreateCachedCalculator()
     {
-        return new InsurancePaymentCalculatorWithCaching(
+        return new CalculatorWithCaching(
             CreateCalculator(), 
             new MemoryCache(new MemoryCacheOptions()));
     }
 
-    public ICalculator CreateLoggingInsurancePaymentCalculator()
+    public ICalculator CreateLoggingCalculator()
     {
-        return new InsurancePaymentCalculatorWithLogging(
+        return new CalculatorWithLogging(
             CreateCalculator(),
-            new LoggerFactory().CreateLogger<InsurancePaymentCalculatorWithLogging>());
+            new LoggerFactory().CreateLogger<CalculatorWithLogging>());
     }
 
-    public ICalculator CreateRoundingInsurancePaymentCalculator()
+    public ICalculator CreateRoundingCalculator()
     {
-        return new InsurancePaymentCalculatorWithRounding(CreateCalculator());
+        return new CalculatorWithRounding(CreateCalculator());
     }
 
-    public ICalculator CreateInsurancePaymentCalculatorWithDecorator(ICalculator calculator)
+    public void SetCalculatorDecorator(ICalculator decorator, ICalculator calculator)
     {
-        return new InsurancePaymentCalculatorWithDecorators(calculator);
+        ArgumentNullException.ThrowIfNull(decorator);
+        ArgumentNullException.ThrowIfNull(calculator);
+        (decorator as CalculatorDecorator)!.SetCalculator(calculator);
     }
 }
