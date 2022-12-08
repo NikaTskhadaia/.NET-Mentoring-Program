@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator.Tests", "tests\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shipment.Calculation", "Task.5\Shipment.Calculation.csproj", "{5DC9C032-5958-4DB5-81F5-C365A4A73D3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cook.Masala", "Task.6\Cook.Masala.csproj", "{CDA8B2E0-2B54-481B-A8E7-D7CB307BB88D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cook.Masala", "Task.6,7\Cook.Masala.csproj", "{CDA8B2E0-2B54-481B-A8E7-D7CB307BB88D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
