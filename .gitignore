@@ -354,3 +354,6 @@ MigrationBackup/
 /Catalog.Service/src/Items.db
 /Catalog.Service/src/Items.db-shm
 /Catalog.Service/src/Items.db-wal
+
+
+.idea/
